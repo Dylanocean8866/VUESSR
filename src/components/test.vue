@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper">
-        <p>Vue SSR</p>
+        <p>{{msg}}</p>
     </div>
 </template>
 <script>
@@ -9,6 +9,15 @@ export default {
         return {
            
         }
+    },
+    computed:{
+        msg(){
+            return this.$store.state.msg
+        }
+    },
+    serverRequest(store){
+    
+        return store.dispatch('getMsg');
     }
 }
 </script>

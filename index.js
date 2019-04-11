@@ -8,6 +8,10 @@ const renderer = serverRenderer.createRenderer({
     template:require('fs').readFileSync('./index.template.html','utf8')
 })
 
+server.get('/api/getMsg',(req,res)=>{
+    res.send('send Msg');
+})
+
 server.get('/dist/bundle-client.js',(req,res)=>{
     res.sendFile(__dirname + '/dist/bundle-client.js')
 });
@@ -15,16 +19,20 @@ server.get('/dist/bundle-client.js',(req,res)=>{
 
 server.get('*',(req,res)=>{
     let config = {url:req.url};
-    let app = createApp(config);
-    renderer.renderToString(app,{
-                src:`<script src="/dist/bundle-client.js"></script>`,
-        },(err,html)=>{
-        if(err){
-            console.log(err);
-        }else{
-            res.end(html);
-        }
-    })
+    createApp(config).then(app=>{
+        let state = JSON.stringify(config.state);
+        console.log(state);
+        renderer.renderToString(app,{
+                    src:`<script src="/dist/bundle-client.js"></script>`,
+                    init:`<script> window.__STATE__ = ${state} </script>`
+            },(err,html)=>{
+            if(err){
+                console.log(err);
+            }else{
+                res.end(html);
+            }
+        })
+    }).catch(err=>console.log(err))
 })
 
 server.listen(12306,()=>{
